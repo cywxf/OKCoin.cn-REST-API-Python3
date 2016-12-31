@@ -5,30 +5,23 @@ from okcoincnapi.OkcoinSpotAPI import OKCoinSpot
 
 
 def api_query(qfunc, opts=(), timelim=600, timeincr=5):
-    res = []
+    res = None
     count = 0
-    while not res and count < timelim:
+    while res is None and count < timelim:
         try:
             res = qfunc(*opts)
-            if isinstance(res, dict):
-                if 'error_code' in res.keys():
-                    print(time.strftime("%d/%m/%Y %H:%M:%S"), 'API Error :', res['error_code'])
-                else:
-                    return res
-            else:
-                return res
-
+            return res
         except:
             print(time.strftime("%d/%m/%Y %H:%M:%S"), 'Internal Error')
 
         count += timeincr
         time.sleep(timeincr)
-        res = []
+        res = None
 
     sys.exit("Process aborded")
 
 
-class OKCoincnInterface:
+class OKCoincnInterfaceReal:
     def __init__(self, keyfile):
         resturl, apikey, secretkey = open(keyfile).read().splitlines()
         self.okcoinspot = OKCoinSpot(resturl, apikey, secretkey)
@@ -39,9 +32,13 @@ class OKCoincnInterface:
 
 
 if __name__ == '__main__':
+    import json
 
-    apiokcoincn = OKCoincnInterface("okcoincnapi.keys")
+    with open('../paramstraders.json') as params_file:
+        params_trader_okcoincn = json.load(params_file)['okcoincn']
+
+    apiokcoincn = OKCoincnInterfaceReal('../'+params_trader_okcoincn['keyfile'])
 
     print(apiokcoincn.getbalance())
     print(apiokcoincn.gettrades(0))
-    print(apiokcoincn.getdepth(10))
+    print(apiokcoincn.getdepth(5))
