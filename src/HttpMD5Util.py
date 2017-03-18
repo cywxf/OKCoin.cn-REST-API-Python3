@@ -7,7 +7,7 @@ import urllib
 import json
 import hashlib
 import time
-import gzip
+import requests
 
 def buildMySign(params,secretKey):
     sign = ''
@@ -17,11 +17,13 @@ def buildMySign(params,secretKey):
     return  hashlib.md5(data.encode("utf8")).hexdigest().upper()
 
 def httpGet(url,resource,params=''):
-    conn = http.client.HTTPSConnection(url, timeout=10)
-    conn.request("GET",resource + '?' + params)
-    response = conn.getresponse()
-    data = gzip.decompress(response.read()).decode('utf-8')
-    return json.loads(data)
+    # conn = http.client.HTTPSConnection(url, timeout=10)
+    # conn.request("GET",resource + '?' + params)
+    # response = conn.getresponse()
+    # data = gzip.decompress(response.read()).decode('utf-8')
+    
+    f = requests.get("https://"+ url+ resource + '?' + params)
+    return json.loads(f.text)
 
 def httpPost(url,resource,params):
      headers = {
