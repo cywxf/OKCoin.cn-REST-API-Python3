@@ -37,7 +37,4 @@ def httpPost(url,resource,params):
      params.clear()
      conn.close()
      return data
-
-
-        
-     
+ 
